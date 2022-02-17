@@ -4,6 +4,9 @@ public class Order {
 
 	private Long id;
 	private Long customerId;
+	private String itemName;
+	private Double value;
+	private Long quantity;
 
 	public Order(Long customerId) {
 		this.setCustomerId(customerId);
@@ -13,6 +16,39 @@ public class Order {
 		this.setId(id);
 		this.setCustomerId(customerId);
 
+	}
+	
+	public Order(Long id, Long customerId, String itemName, Double value, Long quantity) {
+		this.setId(id);
+		this.setCustomerId(customerId);
+		this.setItemName(itemName);
+		this.setValue(value);
+		this.setQuantity(quantity);
+
+	}
+
+	public String getItemName() {
+		return itemName;
+	}
+
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+
+	public Double getValue() {
+		return value;
+	}
+
+	public void setValue(Double value) {
+		this.value = value;
+	}
+
+	public Long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Long quantity) {
+		this.quantity = quantity;
 	}
 
 	public Long getId() {
@@ -34,6 +70,10 @@ public class Order {
 	@Override
 	public String toString() {
 		return "id:" + id + " customer id:" + customerId;
+	}
+	
+	public String toStringExtended() {
+		return "id:" + id + " customer id:" + customerId + " item name:" + itemName + " value:£" + value + " quantity:" + quantity;
 	}
 
 	@Override
