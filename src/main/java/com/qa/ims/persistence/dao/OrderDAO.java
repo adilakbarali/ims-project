@@ -24,20 +24,30 @@ public class OrderDAO implements Dao<Order> {
 		Long customerId = resultSet.getLong("fk_customer_id");
 		return new Order(id, customerId);
 	}
+	
+	public Order modelFromResultSetWithItems(ResultSet resultSet) throws SQLException {
+		long id = resultSet.getLong("oi.fk_order_id");
+		long customerId = resultSet.getLong("o.fk_customer_id");
+		String itemName = resultSet.getString("i.item_name");
+		Double value = resultSet.getDouble("i.value");
+		long quantity = resultSet.getLong("oi.quantity");
+		return new Order(id, customerId, itemName, value, quantity);
+	}
 
 	/**
-	 * Reads all orders from the database
+	 * Reads all orders from the database and items associated with them
 	 * 
-	 * @return A list of orders
+	 * @return A list of orders including items
 	 */
 	@Override
 	public List<Order> readAll() {
 		try (Connection connection = DBUtils.getInstance().getConnection();
 				Statement statement = connection.createStatement();
-				ResultSet resultSet = statement.executeQuery("SELECT * FROM orders");) {
+				ResultSet resultSet = statement
+						.executeQuery("SELECT oi.fk_order_id, o.fk_customer_id, i.item_name, i.value, oi.quantity FROM orders_items oi JOIN orders o ON oi.fk_order_id = o.id JOIN items i ON i.id = oi.fk_item_id;");) {
 			List<Order> orders = new ArrayList<>();
 			while (resultSet.next()) {
-				orders.add(modelFromResultSet(resultSet));
+				orders.add(modelFromResultSetWithItems(resultSet));
 			}
 			return orders;
 		} catch (SQLException e) {
@@ -97,25 +107,10 @@ public class OrderDAO implements Dao<Order> {
 	}
 
 	/**
-	 * Updates an order in the database
-	 * 
-	 * @param customer - takes in an order object, the id field will be used to
-	 *                 update that order in the database
-	 * @return
+	 * Omitted update method (unused method implemented from DAO)
 	 */
 	@Override
 	public Order update(Order order) {
-		try (Connection connection = DBUtils.getInstance().getConnection();
-				PreparedStatement statement = connection
-						.prepareStatement("UPDATE orders SET fk_customer_id = ? WHERE id = ?");) {
-			statement.setLong(1, order.getCustomerId());
-			statement.setLong(2, order.getId());
-			statement.executeUpdate();
-			return read(order.getId());
-		} catch (Exception e) {
-			LOGGER.debug(e);
-			LOGGER.error(e.getMessage());
-		}
 		return null;
 	}
 
